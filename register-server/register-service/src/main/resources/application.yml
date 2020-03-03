@@ -1,0 +1,20 @@
+server:
+  port: 8200
+spring:
+  application:
+    name: register-server
+  datasource:
+    username: root
+    password: 202020
+    url: jdbc:mysql://localhost:3306/attendance?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10100/eureka
+      #是否将自己注册到eureka服务注册中心，默认为true
+    register-with-eureka: true
+    fetch-registry: true
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

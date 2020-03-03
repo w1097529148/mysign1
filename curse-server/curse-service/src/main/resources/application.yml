@@ -1,0 +1,31 @@
+server:
+  port: 8300
+spring:
+  application:
+    name: curse-server
+  datasource:
+    username: root
+    password: 202020
+    url: jdbc:mysql://localhost:3306/attendance?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowMultiQueries=true
+    driver-class-name: com.mysql.jdbc.Driver
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10100/eureka
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+datetime:
+ zero: 06:40:00~07:25:00
+ first: 08:25:00~09:00:00
+ second: 09:05:00~09:50:00
+ third: 10:25:00~11:10:00
+ fourth: 11:15:00~12:00:00
+ fifth: 14:25:00~15:10:00
+ sixth: 15:15:00~16:00:00
+ seventh: 16:25:00~17:10:00
+ eighth: 17:15:00~18:00:00
+ ninth: 19:00:00~19:45:00
+ tenth: 19:50:00~20:35:00
+ eleventh: 20:40:00~21:25:00
