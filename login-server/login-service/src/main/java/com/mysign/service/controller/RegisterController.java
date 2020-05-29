@@ -24,12 +24,11 @@ public class RegisterController {
     @PostMapping("register")
     public ResponseEntity<Void> register(
             @RequestParam("user") String user,
-            @RequestParam("code") String code,
             @RequestParam("password") String password,
             @RequestParam("password1") String password1,
             @RequestParam("value") String role
     ) {
-        this.registerService.registerRole1(user, code, password, password1, role);
+        this.registerService.registerRole1(user,password, password1, role);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -37,26 +36,23 @@ public class RegisterController {
     @GetMapping("selectRole")
     public ResponseEntity<Boolean> selectRole(
             @RequestParam("user") String user,
-            @RequestParam("code") String code,
             @RequestParam("password") String password,
             @RequestParam("password1") String password1,
             @RequestParam("value") String role
     ) {
-        System.out.println("我进来了");
-        return ResponseEntity.ok(registerService.selectRole(user, code, password, password1, role));
+        return ResponseEntity.ok(registerService.selectRole(user,password, password1,role));
     }
 
     //@RequestParam（通过字符串中解析出参数）
 //@RequestBody（从请求体中获取参数）。
     @PostMapping("studentRole")
     @ResponseBody
-    public ResponseEntity<Boolean> registerStudent(@RequestBody testData testData) {
+    public Boolean registerStudent(@RequestBody testData testData) {
         if (ObjectUtils.isNotEmpty(testData)) {
 
-            if (ObjectUtils.allNotNull(testData.getFormValid(), testData.getUser(), testData.getCode())) {
-                return ResponseEntity.ok(registerService.addStudent(testData.getFormValid(), testData.getUser(), testData.getCode()));
+            if (ObjectUtils.allNotNull(testData.getFormValid(), testData.getUser())) {
+                return registerService.addStudent(testData.getFormValid(), testData.getUser());
             }
-
         }
         throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
 
@@ -67,12 +63,12 @@ public class RegisterController {
     @ResponseBody
     public ResponseEntity<Boolean> registerTeacher(@RequestBody testData testData) {
         if (ObjectUtils.isNotEmpty(testData)) {
-            if (ObjectUtils.allNotNull(testData.getFormValid(), testData.getUser(), testData.getCode())) {
-                return ResponseEntity.ok(registerService.addTeacher(testData.getFormValid(), testData.getUser(), testData.getCode()));
+            if (ObjectUtils.allNotNull(testData.getFormValid(), testData.getUser())) {
+                return ResponseEntity.ok(registerService.addTeacher(testData.getFormValid(), testData.getUser()));
             }
-
         }
         throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
 
     }
+
 }

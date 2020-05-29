@@ -4,10 +4,11 @@ import com.mysign.service.po.curse;
 import com.mysign.service.po.teacherInfo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import tk.mybatis.mapper.common.Mapper;
 
-import java.util.List;
 
+import java.util.List;
 public interface curseMapper extends Mapper<curse> {
 /**
 *@Description: 两表联查根据学生学号查询其课程
@@ -39,7 +40,7 @@ public interface curseMapper extends Mapper<curse> {
     *@Author Mr.Li
     *@Date 2020/2/13 10:52
     */
-    @Select("SELECT a.*,c.* FROM tb_studentinfo a  JOIN tb_student_curse b ON a.`student_id`=b.`student_id` AND a.`student_id`=#{studentId}  JOIN tb_curse c ON b.`curse_id`=c.`id`")
+    @Select("SELECT a.*,c.* FROM tb_studentInfo a  JOIN tb_student_curse b ON a.`student_id`=b.`student_id` AND a.`student_id`=#{studentId}  JOIN tb_curse c ON b.`curse_id`=c.`id`")
     List getStudentAllMessage(String studentId);
 
     /**
@@ -55,14 +56,14 @@ public interface curseMapper extends Mapper<curse> {
     @Select("SELECT * FROM tb_curse a JOIN tb_teacherInfo b ON a.`teacher_id`=b.`teacher_id`")
     List getTeacherAndCurse();
 
-@Select("SELECT * FROM tb_teacherinfo WHERE teacher_id IN(SELECT teacher_id FROM tb_curse WHERE id=#{curseId})")
+@Select("SELECT * FROM tb_teacherInfo WHERE teacher_id IN(SELECT teacher_id FROM tb_curse WHERE id=#{curseId})")
     teacherInfo getTeacherByCurseId(Integer curseId);
 
 @Insert("INSERT INTO tb_student_curse VALUES(NULL,#{studentId},#{curseId})")
-int studentAddCurse(Integer curseId,String studentId);
+int studentAddCurse(String studentId,Integer curseId);
 
-@Select("SELECT COUNT(*) FROM tb_student_curse WHERE curse_id=#{curseId}")
-int whetherChoose(Integer curseId);
+@Select("SELECT COUNT(*) FROM tb_student_curse WHERE curse_id=#{curseId} and student_id=#{studentId}")
+int whetherChoose(Integer curseId,String studentId);
     /**
      *@Description: 当查询全部课程时返回的老师集合
      *@Params
@@ -70,7 +71,7 @@ int whetherChoose(Integer curseId);
      *@Author Mr.Li
      *@Date 2020/2/16 10:49
      */
-    @Select("SELECT a.* FROM tb_teacherinfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id ORDER BY b.`id` DESC")
+    @Select("SELECT a.* FROM tb_teacherInfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id ORDER BY b.`id` DESC")
     List<teacherInfo> getAllTeachersByCurse();
 
     /**
@@ -80,8 +81,13 @@ int whetherChoose(Integer curseId);
      *@Author Mr.Li
      *@Date 2020/2/16 10:58
      */
-    @Select("SELECT a.* FROM tb_teacherinfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id JOIN tb_student_curse c ON b.`id`=c.`curse_id` AND c.`student_id`=#{studentId}")
+    @Select("SELECT a.* FROM tb_teacherInfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id JOIN tb_student_curse c ON b.`id`=c.`curse_id` AND c.`student_id`=#{studentId}")
     List<teacherInfo> getAllTeachersByStudent(String studentId);
 @Select("SELECT * FROM tb_curse WHERE curse_name LIKE  #{curseName}")
     List<curse> getCurseByName(String curseName);
+@Update("update tb_curse set number=number+1 where id=#{curesId} and number<numbers")
+    int updateNumberByCurseId(Integer curseId);
+
+@Select("SELECT a.* FROM tb_teacherInfo a JOIN tb_curse  b ON b.`teacher_id`=a.`teacher_id` AND b.`curse_name` like #{curseName}")
+    List<teacherInfo> findTeacherByCurseName(String curseName);
 }

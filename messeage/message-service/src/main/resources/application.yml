@@ -1,0 +1,28 @@
+server:
+  port: 8600
+spring:
+  application:
+    name: message-server
+  datasource:
+    username: root
+    password: 202020
+    url: jdbc:mysql://112.124.31.166:3306/attendance?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT-8
+eureka:
+    client:
+      service-url:
+        defaultZone: http://127.0.0.1:10100/eureka
+        #是否将自己注册到eureka服务注册中心，默认为true
+      register-with-eureka: true
+      fetch-registry: true
+mybatis:
+    configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      map-underscore-to-camel-case: true
+logging:
+  file:
+    path: D:/sign/message
+    name: message.log

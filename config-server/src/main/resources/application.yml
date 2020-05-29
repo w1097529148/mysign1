@@ -1,0 +1,14 @@
+server:
+  port: 8500
+spring:
+  profiles:
+    active: nactive
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:/Users/hasee/Desktop/mysign1/config-server/src/main/resources/config/licensingservice
+        git:
+          uri: https://github.com/w1097529148/mysign1.git
+          username: 1097529148@qq.com
+          password: teng,jiayou520

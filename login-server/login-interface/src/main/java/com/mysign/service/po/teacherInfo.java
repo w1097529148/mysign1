@@ -1,7 +1,9 @@
 package com.mysign.service.po;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -12,8 +14,9 @@ import java.util.Date;
  * @Author Mr.Li
  * @Date 2020/2/9 11:07
  */
-@Data
-@Table(name = "tb_studentInfo")
+@Getter
+@Setter
+@Table(name = "tb_teacherInfo")
 @NoArgsConstructor
 public class teacherInfo {
     private Integer id;//教师表id

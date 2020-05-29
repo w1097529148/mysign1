@@ -19,19 +19,6 @@ public interface studentLoginMapper extends Mapper<student> {
 
     @Insert("INSERT INTO tb_student(id,student_id,pwd) VALUES(#{student.id},#{student.studentId},#{student.pwd)")
     boolean addStudent(@Param("student") student student);
-    @Insert("INSERT INTO tb_studentInfo VALUES(" +
-            "#{studentInfo.id}," +
-            "#{studentInfo.studentId}," +
-            "#{studentInfo.studentName}," +
-            "#{studentInfo.title},#{studentInfo.birthday}," +
-            "#{studentInfo.sex}," +
-            "#{studentInfo.address}," +
-            "#{studentInfo.tel}," +
-            "#{studentInfo.grade}," +
-            "#{studentInfo.cla}," +
-            "#{studentInfo.professional}," +
-            "#{studentInfo.major})")
-    int addStudentInfo(@Param("studentInfo")studentInfo studentInfo);
 
     @Select("select count(*) from tb_student where student_id=#{studentId}")
     int selectStudent(@Param("studentId") String studentId);
@@ -47,6 +34,6 @@ public interface studentLoginMapper extends Mapper<student> {
     *@Author Mr.Li
     *@Date 2020/2/13 10:27
     */
-    @Select("SELECT a.*,c.* FROM tb_studentinfo a  JOIN tb_student_curse b ON a.`student_id`=b.`student_id` AND a.`student_id`=#{studentId}  JOIN tb_curse c ON b.`curse_id`=c.`id`")
+    @Select("SELECT a.*,c.* FROM tb_studentInfo a  JOIN tb_student_curse b ON a.`student_id`=b.`student_id` AND a.`student_id`=#{studentId}  JOIN tb_curse c ON b.`curse_id`=c.`id`")
     List getStudentAllMessage(String studentId);
 }

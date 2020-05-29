@@ -26,7 +26,7 @@ public class studentInfo {
     private Boolean sex;//学生性别  性别,false女true男
     private String address;//学生住址
     private String tel;//联系方式
-    private  String grade;//学生年级
+    private String grade;//学生年级
     private String cla;//学生班级
     private String professional;//学生专业
     private String major;//主修方面

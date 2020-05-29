@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description T000
@@ -40,6 +41,27 @@ public class service {
             System.out.println("signTeacher = " + signTeacher);
 
         }
+    }
+    @Test
+    public void getSignMessage(){
+        List<Map<String, Object>> signMessage = signMapper.getSignMessage("160510201");
+        for (Map<String, Object> map : signMessage) {
+            System.out.println("map = " + map);
+        }
+    }
 
+    @Test
+    public void testGetStudentSignMessage(){
+        List<Map<String, Object>> messageByTeacherId = teacherSignMapper.getStudentSignMessageByTeacherId("160510201");
+        for (Map<String, Object> map : messageByTeacherId) {
+            System.out.println("map = " + map);
+        }
+    }
+    @Test
+    public void t(){
+        List<Map<String, Object>> test = teacherSignMapper.findStudentSignMessage(null,"张二娃");
+        for (Map<String, Object> map : test) {
+            System.out.println("map = " + map);
+        }
     }
 }

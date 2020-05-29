@@ -2,7 +2,9 @@ package com.mysign.service.po;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.Column;
@@ -17,7 +19,8 @@ import java.util.Date;
  * @Author Mr.Li
  * @Date 2020/2/9 10:56
  */
-@Data
+@Getter
+@Setter
 @Table(name = "tb_studentInfo")
 @NoArgsConstructor
 public class studentInfo implements Serializable {

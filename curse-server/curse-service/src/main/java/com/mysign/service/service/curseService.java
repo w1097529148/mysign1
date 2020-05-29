@@ -7,17 +7,22 @@ import com.mysign.service.po.curseTimes;
 import com.mysign.service.po.datetime;
 import com.mysign.service.po.teacherInfo;
 import com.mysign.service.vo.ExceptionEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Slf4j
 public class curseService {
 
     @Autowired
@@ -30,12 +35,20 @@ public class curseService {
      * @Author Mr.Li
      * @Date 2020/2/19 22:33
      */
-    public List<curse> getCurseByName(String CurseName) {
+    @Transactional
+    public Map<String,Object> getCurseByName(String CurseName) {
 
         if (StringUtils.isBlank(CurseName))
             throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
+        Map<String,Object> map=new ConcurrentHashMap<>();
         List<curse> curseByName = curseMapper1.getCurseByName("%" + CurseName + "%");
-        return curseByName;
+                map.put("curse",curseByName);
+            List<teacherInfo> teacherByCurseName = curseMapper1.findTeacherByCurseName("%" + CurseName + "%");
+            if (teacherByCurseName!=null){
+                map.put("teacher",teacherByCurseName);
+                return map;
+            }
+            throw new MySignException(ExceptionEnum.ROLE_IS_NOT_EXISTS);
     }
 
     /**
@@ -56,18 +69,18 @@ public class curseService {
             curseTimes curseTimes1 = new curseTimes("", "", "", "", "", "", "");
             for (curse list : lists) {
                 str = list.getTimes();
-                String[] s = StringUtils.split(str, ".");
+                log.debug("获取到的课表时间：{}",str);
+                String[] s = StringUtils.split(str, ",");
                 for (String s1 : s) {
                     s1 = StringUtils.substring(s1, 1, -1);
-                    String[] s2 = StringUtils.split(s1, ",");
+                    String[] s2 = StringUtils.split(s1, ".");
                     k = Integer.parseInt(s2[0]);
                     for (int j = 1; j < s2.length; j++) {
                         index = Integer.parseInt(s2[j])-1;
                         if (index == i) {
-                            String s3 = list.getCurseName() + list.getScore() + "分" + list.getWhethe() +""+ list.getWeek()+ list.getStartTime() + "~" + list.getEndTime() + list.getPlace();
+                            String s3 = list.getCurseName() +"<br/>"+ list.getScore() + "分<br/>" + list.getWhethe() +"<br/>"+ list.getWeek()+"<br/>"+ list.getStartTime() + "~" + list.getEndTime() +"<br/>"+ list.getPlace();
                             curseTimes1 = getObject(curseTimes1, k, s3);
                         }
-
                     }
                 }
             }
@@ -181,20 +194,20 @@ public class curseService {
      * @Author Mr.Li
      * @Date 2020/2/15 0:43
      */
-    public Map<Object,Object> getCurseTimeAndCurse(String curseTime, Integer CurseId) {
-        if (StringUtils.isBlank(curseTime) && CurseId == null)
+    public Map<Object,Object> getCurseTimeAndCurse(String curseTime, Integer CurseId,String studentId) {
+        if (StringUtils.isAllBlank(curseTime,studentId) && CurseId == null)
             throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
         Map map = new HashMap();
         Boolean b = true;
-        int i1 = curseMapper1.whetherChoose(CurseId);
+        int i1 = curseMapper1.whetherChoose(CurseId,studentId);
         if (i1 == 0) {
             b = false;
         }
-        String[] s = StringUtils.split(curseTime, ".");
+        String[] s = StringUtils.split(curseTime, ",");
         String week = "";
         for (String s1 : s) {
             s1 = StringUtils.substring(s1, 1, -1);
-            String[] s2 = StringUtils.split(s1, ",");
+            String[] s2 = StringUtils.split(s1, ".");
             week = week + getWeek(s2[0]);
             for (int i = 1; i < s2.length; i++) {
                 week = week + "第" + s2[i] + "节";
@@ -228,34 +241,28 @@ public class curseService {
      * @Date 2020/2/9 22:28
      */
     public Map<Object, Object> getStudentCurse(String studentId, String teacherId) {
-        System.out.println(studentId);
-        System.out.println(teacherId);
         if (StringUtils.isBlank(studentId)&&StringUtils.isBlank(teacherId))
             throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
-        System.out.println("我过来了");
+        log.info("获取课程列表开始=============");
         List<teacherInfo> allTeachersByStudent = null;
         List<curse> CurseWithMe = null;//与我相关
         if (StringUtils.isNotBlank(studentId)) {
             allTeachersByStudent = curseMapper1.getAllTeachersByStudent(studentId);
+            log.info("根据学生学号:{} 获取老师的集合：{}",allTeachersByStudent);
             CurseWithMe = curseMapper1.getStudentCurses(studentId);
+            log.info("根据学生学号：{}获取到的学生课程集合：{}",studentId,CurseWithMe);
         }
         if (StringUtils.isNotBlank(teacherId))
             CurseWithMe = curseMapper1.getTeacherCurses(teacherId);
-        List<curse> lists = curseMapper1.selectAll();
-
-        List<teacherInfo> allTeachersByCurse = curseMapper1.getAllTeachersByCurse();
-
-        if (!CollectionUtils.isEmpty(CurseWithMe) && !CollectionUtils.isEmpty(lists) && !CollectionUtils.isEmpty(allTeachersByCurse)) {
+        if (!CollectionUtils.isEmpty(CurseWithMe)) {
             Map<Object, Object> curseTable = new HashMap<>();
             if (!CollectionUtils.isEmpty(allTeachersByStudent))
                 curseTable.put("我的教师", allTeachersByStudent);
             curseTable.put("与我相关", CurseWithMe);
-            curseTable.put("全部教师", allTeachersByCurse);
-            curseTable.put("全部课程", lists);
+            log.info("返回的map集合为：{}",curseTable);
             return curseTable;
         }
         else{
-            System.out.println("我抛异常");
             throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
         }
 
@@ -296,17 +303,24 @@ public class curseService {
      * @Author Mr.Li
      * @Date 2020/2/18 22:17
      */
-    public Boolean studentAddCurse(Integer curseId, String studentId) {
-        if (curseId == null) {
+    @Transactional
+    public Boolean studentAddCurse(Integer curseId, String studentId,Integer number) {
+        if (curseId == null||number==null||StringUtils.isBlank(studentId)) {
             throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
         }
-        int i1 = curseMapper1.whetherChoose(curseId);
+        int i1 = curseMapper1.whetherChoose(curseId,studentId);
         if (i1 > 0) {
             throw new MySignException(ExceptionEnum.ROLE_IS_NOT_EXISTS);
         }
-        int i = curseMapper1.studentAddCurse(curseId, studentId);
-        if (i > 0)
-            return true;
+        int i = curseMapper1.studentAddCurse(studentId,curseId);
+        if (i>0) {
+                int i2 = curseMapper1.updateNumberByCurseId(curseId);
+                if (i2 > 0) {
+                    return true;
+                }else{
+                    throw new MySignException(ExceptionEnum.THE_NUMBER_HAS_REACHED);
+                }
+        }
         throw new MySignException(ExceptionEnum.ROLE_IS_NOT_EXISTS);
 
     }
@@ -331,9 +345,12 @@ int text=1;
 
             List<String> list=new ArrayList<>();//存放今天有课的课程集合
             String times = curs.getTimes();
-            String[] split = StringUtils.split(times, ".");//将数据中不同星期的课程分开
+            log.info("获取到的课程为：{}",times);
+            String[] split = StringUtils.split(times, ",");//将数据中不同星期的课程分开
+            log.debug("截取,结果为：{}",split);
             for (String s : split) {//遍历课程将星期与课程节时分开
-                String[] split1 = StringUtils.split(StringUtils.substring(s,1,-1), ",");//去除括号
+                String[] split1 = StringUtils.split(StringUtils.substring(s,1,-1), ".");//去除括号
+                log.info("去除. 号和括号之后为：{}",split1);
                 if (StringUtils.equals(format, getWeek(split1[0]))) {//如果当前星期和数据库保存的星期相等（今天有课）
                     for (int i = 1; i < split1.length; i++) {
                         String curseNumber = getCurseNumber(split1[i],date);
@@ -360,6 +377,44 @@ int text=1;
                 , datetime.getSeventh(), datetime.getEighth(), datetime.getNinth(), datetime.getTenth(), datetime.getEleventh()};
         return strings[i-1];
     }
+    public Boolean TeacherAddCurse(curse curse) {
+       return curseMapper1.insertSelective(curse)>0;
+    }
 
+    public Map<String, Object> getAllCurseMessage() {
+        ConcurrentHashMap<String, Object> hashMap = new ConcurrentHashMap<>();
+        List<curse> lists = curseMapper1.selectAll();
+        System.out.println("lists = " + lists);
+        List<teacherInfo> allTeachersByCurse = curseMapper1.getAllTeachersByCurse();
+        hashMap.put("全部教师", allTeachersByCurse);
+        hashMap.put("全部课程", lists);
+        return hashMap;
+    }
 
+    public static void main(String[] args) {
+        String[] s = StringUtils.split("(4.8),(7.9.10)", ",");
+        String week = "";
+        for (String s1 : s) {
+            s1 = StringUtils.substring(s1, 1, -1);
+            System.out.println("s1 = " + s1);
+            String[] s2 = StringUtils.split(s1, ".");
+            System.out.println("s2 = " + s2);
+            curseService service = new curseService();
+            week = week + service.getWeek(s2[0]);
+            for (int i = 1; i < s2.length; i++) {
+                week = week + "第" + s2[i] + "节";
+            }
+            week = week + ",";
+        }
+        System.out.println(StringUtils.substring(week, 0, -1));
+    }
+   public List<teacherInfo> findTeacherByCurseName(String curseName){
+        if (StringUtils.isNotBlank(curseName)){
+            List<teacherInfo> teacherByCurseName = curseMapper1.findTeacherByCurseName(curseName);
+            if (teacherByCurseName!=null)
+                return teacherByCurseName;
+            throw new MySignException(ExceptionEnum.ROLE_IS_NOT_EXISTS);
+        }
+        throw new MySignException(ExceptionEnum.INPUT_IS_BLANK);
+    }
 }

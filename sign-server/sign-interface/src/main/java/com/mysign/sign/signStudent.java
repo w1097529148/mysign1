@@ -1,8 +1,8 @@
 package com.mysign.sign;
-
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.Column;
@@ -25,11 +25,13 @@ public class signStudent implements Serializable {
     @Id
     @KeySql(useGeneratedKeys = true)
     @Column(name = "id")
-    private int id;//学生表id
+    private Integer id;//学生表id
     private String studentId;//学生学号
-    @Column(name = "teacher_curse_id")
-    private int curseId;//课程id
+    @Column(name = "sign_table_id")
+    private Integer curseId;//课程id
     @Column(name = "sign_time")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date signTime;//签到时间
     @Column(name="sign_state")
     private Boolean signState;//签到状态
@@ -39,19 +41,12 @@ public class signStudent implements Serializable {
     private Double signCoordinatesY;//签到Y坐标
     @Transient
     private String State;
-    @Transient
-    private String Time;
-    @Transient
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 public String getState(){
     return this.signState?"已签到":"未签到";
 
 }
-    public String getTime() {
-        return sdf.format(this.signTime);
-    }
 
-    public signStudent(String studentId, int curseId, Date signTime, Boolean signState, Double signCoordinatesX, Double signCoordinatesY) {
+    public signStudent(String studentId, Integer curseId, Date signTime, Boolean signState, Double signCoordinatesX, Double signCoordinatesY) {
         this.studentId = studentId;
         this.curseId = curseId;
         this.signTime = signTime;

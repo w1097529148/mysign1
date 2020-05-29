@@ -19,7 +19,7 @@ public interface teacherLoginMapper  extends Mapper<teacher> {
      *@Author Mr.Li
      *@Date 2020/2/16 10:49
      */
-    @Select("SELECT a.* FROM tb_teacherinfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id ORDER BY b.`id` DESC")
+    @Select("SELECT a.* FROM tb_teacherInfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id ORDER BY b.`id` DESC")
     List<teacherInfo> getAllTeachersByCurse();
 
     /**
@@ -29,6 +29,6 @@ public interface teacherLoginMapper  extends Mapper<teacher> {
     *@Author Mr.Li
     *@Date 2020/2/16 10:58
     */
-    @Select("SELECT a.* FROM tb_teacherinfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id JOIN tb_student_curse c ON b.`id`=c.`curse_id` AND c.`student_id`=#{studentId}")
+    @Select("SELECT a.* FROM tb_teacherInfo a JOIN tb_curse b ON a.teacher_id=b.teacher_id JOIN tb_student_curse c ON b.`id`=c.`curse_id` AND c.`student_id`=#{studentId}")
     List<teacherInfo> getAllTeachersByStudent(String studentId);
 }

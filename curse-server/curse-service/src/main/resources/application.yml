@@ -6,8 +6,16 @@ spring:
   datasource:
     username: root
     password: 202020
-    url: jdbc:mysql://localhost:3306/attendance?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowMultiQueries=true
+    url: jdbc:mysql://112.124.31.166:3306/attendance?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT-8
+  devtools:
+    restart:
+      additional-exclude: curse/** #控制额外路径下的更改是否触发完整重新启动或实时重新加载。
+      additional-paths: /watch #配置额外的路径去监控它是否发生了改变
+      enabled: false #热部署 #是否禁用重启
 eureka:
   client:
     service-url:
@@ -29,3 +37,15 @@ datetime:
  ninth: 19:00:00~19:45:00
  tenth: 19:50:00~20:35:00
  eleventh: 20:40:00~21:25:00
+# 按照默认的名称spring.log，生成到指定路径及日志。
+  # 不指定的情况下默认生成在项目根目录，按照配置生成所需的日志名称
+logging:
+  file:
+    path: D:/sign/curse
+    name: curse.log
+ssh:
+ ip: 112.124.31.166
+ name: root
+ password: teng,jiayou
+ port: 22
+ filePath: home

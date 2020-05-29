@@ -13,7 +13,7 @@ import java.util.Date;
  * @Date 2020/2/9 11:07
  */
 @Data
-@Table(name = "tb_studentInfo")
+@Table(name = "tb_teacherInfo")
 public class teacherInfo {
     private Integer id;//教师表id
     private String teacherId;//教师工号

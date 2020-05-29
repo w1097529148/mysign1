@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mysign.sign</groupId>
     <artifactId>sign-service</artifactId>
 
     <dependencies>
@@ -44,6 +43,11 @@
             <groupId>com.mysign.common</groupId>
             <artifactId>common-server</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.1.10</version>
         </dependency>
     </dependencies>
 </project>
